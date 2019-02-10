@@ -16,14 +16,14 @@ Build Instructions
 See https://dev.fitbit.com/build/guides/command-line-interface/
 
 To install the fitbit sdk do:
-	npm add --dev @fitbit/sdk
-	npm add --dev @fitbit/sdk-cli
+ *	npm add --dev @fitbit/sdk
+ *	npm add --dev @fitbit/sdk-cli
 
 Change directory to the fitbit_sd directory and do:
-	npx fitbit 
+ *	npx fitbit 
 to enter the fitbit shell, then do
-	build
-	install
+ *	build
+ *	install
 
 Testing
 =======
