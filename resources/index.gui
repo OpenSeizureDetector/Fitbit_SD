@@ -1,0 +1,11 @@
+<svg>
+  <text id="title-label" class="title-label" x="50%" y="30">OpenSeizureDetector</text>
+  <text id="accel-label" class="sensor-label" x="50%" y="50">accelerometer</text>
+  <text id="accel-data" class="sensor-data" x="50%" y="70">{ ... }</text>
+  <text id="bps-label" class="sensor-label" x="50%" y="90">body-presence</text>
+  <text id="bps-data" class="sensor-data" x="50%" y="110">{ ... }</text>
+  <text id="hrm-label" class="sensor-label" x="50%" y="130">heart rate</text>
+  <text id="hrm-data" class="sensor-data" x="50%" y="150">{ ... }</text>
+  <text id="bat-label" class="sensor-label" x="50%" y="170">battery:</text>
+  <text id="bat-data" class="sensor-data" x="50%" y="190">{ ... }</text>
+</svg>

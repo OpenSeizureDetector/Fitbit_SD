@@ -1,0 +1,31 @@
+{
+  "name": "fitbit_sd",
+  "version": "0.1.0",
+  "private": true,
+  "license": "GPL V3",
+  "devDependencies": {
+    "@fitbit/sdk": "~3.0.0",
+    "@fitbit/sdk-cli": "^1.5.0"
+  },
+  "fitbit": {
+    "appUUID": "2d3a7634-40cd-41ee-a00e-a759de2ac675",
+    "appType": "clockface",
+    "appDisplayName": "Fitbit_SD",
+    "iconFile": "resources/icon.png",
+    "wipeColor": "#ffffff",
+    "requestedPermissions": [
+      "access_heart_rate",
+      "access_activity"
+    ],
+    "buildTargets": [
+      "higgs",
+      "meson"
+    ],
+    "i18n": {},
+    "defaultLanguage": "en-US"
+  },
+  "scripts": {
+    "build": "fitbit-build",
+    "debug": "fitbit"
+  }
+}
