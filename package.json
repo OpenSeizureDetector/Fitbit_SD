@@ -4,7 +4,7 @@
   "private": true,
   "license": "GPL V3",
   "devDependencies": {
-    "@fitbit/sdk": "~3.0.0",
+    "@fitbit/sdk": "^3.0.0",
     "@fitbit/sdk-cli": "^1.5.0"
   },
   "fitbit": {

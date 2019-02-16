@@ -16,7 +16,7 @@
   fill: white;
   text-anchor: middle;
   text-length: 32;
-  font-size: 20;
+  font-size: 30;
 }
 
 .sensor-label {
@@ -24,7 +24,7 @@
   fill: white;
   text-anchor: middle;
   text-length: 32;
-  font-size: 20;
+  font-size: 30;
 }
 
 .sensor-data {
@@ -32,5 +32,13 @@
   fill: yellow;
   text-anchor: middle;
   text-length: 32;
-  font-size: 20;
+  font-size: 30;
+}
+
+.time-text {
+  font-family: System-Light;
+  fill: white;
+  text-anchor: middle;
+  text-length: 32;
+  font-size: 60;
 }
