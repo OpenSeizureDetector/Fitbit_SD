@@ -45,6 +45,10 @@ var FitbitSdComms = {
 
     onReceive : function(evt) {
 	console.log("onReceive - evt="+JSON.stringify(evt));
+	if (evt['data']=="sendSettings") {
+	    console.log("sendSettings response");
+	    FitbitSdComms.sendSettings();
+	}
     },
 };
 

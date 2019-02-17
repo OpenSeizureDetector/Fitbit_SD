@@ -26,7 +26,7 @@ var FitbitSdDataHandler = {
 	console.log(this.TAG+"initialize()");
 	this.appdata = appdata;
 	this.mComms = FitbitSdComms;
-	this.mComms.onStart();
+	this.mComms.onStart(this);
 	// 25 Hz, collect 5 seconds of data into a single batch.
 	this.acc = new Accelerometer(
 	    { frequency: this.SAMPLE_FREQUENCY,

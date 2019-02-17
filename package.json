@@ -14,8 +14,9 @@
     "iconFile": "resources/icon.png",
     "wipeColor": "#ffffff",
     "requestedPermissions": [
-      "access_heart_rate",
-      "access_activity"
+	"access_heart_rate",
+	"access_activity",
+	"access_internet"
     ],
     "buildTargets": [
       "higgs",

@@ -31,22 +31,38 @@ var FitbitCompComms = {
 	}
     },
 
+    // Called when a message is received from the watch.
     onReceive : function(evt) {
 	console.log("onReceive - evt="+JSON.stringify(evt));
 	console.log(" - evt.data="+JSON.stringify(evt.data));
+	//console.log(CONST.END_POINT_LOCALHOST);
 	if (evt.data['dataType'] == 'raw') {
 	    var url = "http://localhost:8080/data";
+	    //var dataObj = {'dataObj':evt.data};
 	    console.log("Received data - sending it to server");
-	    fetch(url, {
-		method: "POST", 
-		headers: {
-		    "Content-Type": "application/json",
-		},
-		body: JSON.stringify(evt.data)
-	    })
-		.then(response => response.json())
-		.then(response => console.log('Success:', JSON.stringify(response)))
-		.catch(error => console.error('Error sending data to server:', error));
+	    fetch(url,
+		  {
+		      method: "POST", 
+		      headers: {
+			  "Content-Type": "application/json",
+		      },
+		      body: JSON.stringify(evt.data)
+		  })
+		.then(response => {
+		    console.log("response="+response+", response.status="+response.status);
+		    return response.text();
+		})
+		.then(response => {
+		    console.log('Success: - response = '+response);
+		    FitbitCompComms.sendMessage(response);
+		})
+		.catch(function(error) {
+		    console.log("error="+JSON.stringify(error));
+		    console.error('Error sending data to server:',
+				  error, JSON.stringify(error));
+		}
+		      );
+		
 	} else {
 	    console.log("Received settings");
 	}
