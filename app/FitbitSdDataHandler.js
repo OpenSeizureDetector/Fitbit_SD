@@ -4,141 +4,167 @@ import { Accelerometer } from "accelerometer";
 import { BodyPresenceSensor } from "body-presence";
 import { HeartRateSensor } from "heart-rate";
 import { battery } from "power";
+import * as messaging from "messaging";
 
-var FitbitSdDataHandler = {
-    TAG : "FitbitSdDataHandler: ",
-    ANALYSIS_PERIOD : 5,
-    SAMPLE_PERIOD : 1,
-    SAMPLE_FREQUENCY : 25,
+var initialiseDataHandler = function(osd) {
+    console.log("initialiseDataHandler()");
+    osd['ANALYSIS_PERIOD'] = 5;
+    osd['SAMPLE_PERIOD'] = 1;
+    osd['SAMPLE_FREQUENCY'] = 25;
+    osd['mSamplesX'] = [];
+    osd['mSamplesY'] = [];
+    osd['mSamplesZ'] = [];
+    osd['nSamp'] = 0;
+    osd['mHR'] = 0;
+    osd['acc'] = null,
+    osd['bps'] = null,
+    osd['hrm'] = null,
 
-    mSamplesX : [],
-    mSamplesY : [],
-    mSamplesZ : [],
-    nSamp : 0,
-    mHR : 0,
 
-    mComms : null,
-    acc : null,
-    bps : null,
-    hrm : null,
-
-    initialize : function(appdata) {
-	console.log(this.TAG+"initialize()");
-	this.appdata = appdata;
-	this.mComms = FitbitSdComms;
-	this.mComms.onStart(this);
-	// 25 Hz, collect 5 seconds of data into a single batch.
-	this.acc = new Accelerometer(
-	    { frequency: this.SAMPLE_FREQUENCY,
-	      batch: this.SAMPLE_FREQUENCY * this.SAMPLE_PERIOD });
-	this.acc.onreading = this.onAccData;
-	this.acc.onactivate = this.onAccActivated;
-	this.acc.onerror = this.onAccError;
+    osd.startDataHandler = function() {
+	console.log("osd.startDataHandler()");
+	osd.acc = new Accelerometer(
+	    { frequency: osd.SAMPLE_FREQUENCY,
+	      batch: osd.SAMPLE_FREQUENCY * osd.SAMPLE_PERIOD });
+	osd.acc.onreading = osd.onAccData;
+	osd.acc.onactivate = osd.onAccActivated;
+	osd.acc.onerror = osd.onAccError;
 	
-	this.bps = new BodyPresenceSensor();
-
-	this.hrm = new HeartRateSensor({ frequency: 1, batch: 1 });
-	this.hrm.onreading = this.onHrData;
-	this.hrm.onactivate = this.onHrActivated;
-	this.hrm.onerror = this.onHrError;
+	osd.bps = new BodyPresenceSensor();
 	
-	this.acc.start();
-	this.bps.start();
-	this.hrm.start();
+	osd.hrm = new HeartRateSensor({ frequency: 1, batch: 1 });
+	osd.hrm.onreading = osd.onHrData;
+	osd.hrm.onactivate = osd.onHrActivated;
+	osd.hrm.onerror = osd.onHrError;
 	
-	console.log("initialize() this; "+JSON.stringify(this));
-    
-    },
+	osd.acc.start();
+	osd.bps.start();
+	osd.hrm.start();
 
-    getDataJson : function() {
+	messaging.peerSocket.onopen = osd.onMsgOpen;
+	messaging.peerSocket.onmessage = osd.onMsgReceive;
+	messaging.peerSocket.onError = osd.onMsgError;
+    };
+
+    // Note - actually returns an object that can be turned into JSON
+    // with JSON.stringify.
+    osd.getDataJson = function() {
 	var i;
 	var dataObj = {};
 	dataObj['dataType'] = 'raw';
 	dataObj['data'] = [];
-	for(i=0;i<this.ANALYSIS_PERIOD*this.SAMPLE_FREQUENCY;i++) {
+	for(i=0;i<osd.ANALYSIS_PERIOD*osd.SAMPLE_FREQUENCY;i++) {
 	    dataObj['data'].push(
-		Math.abs(Math.floor(this.mSamplesX[i]*1000/9.81))
-		    + Math.abs(Math.floor(this.mSamplesY[i]*1000/9.81))
-		    + Math.abs(Math.floor(this.mSamplesZ[i]*1000/9.81))
+		Math.abs(Math.floor(osd.mSamplesX[i]*1000/9.81))
+		    + Math.abs(Math.floor(osd.mSamplesY[i]*1000/9.81))
+		    + Math.abs(Math.floor(osd.mSamplesZ[i]*1000/9.81))
 	    );
 	};
-	dataObj['HR'] = this.appdata.hr;
+	dataObj['HR'] = osd.mHR;
 	//return(JSON.stringify(dataObj));
 	return(dataObj);
-    },
+    };
 
-    getSettingsJson : function() {
+
+    // Note - actually returns an object that can be turned into JSON
+    // with JSON.stringify.
+    osd.getSettingsJson = function() {
 	var i;
 	var dataObj = {};
 	dataObj['dataType'] = 'settings';
-	dataObj['analysisPeriod'] = this.ANALYSIS_PERIOD;
-	dataObj['sampleFreq'] = this.SAMPLE_FREQUENCY;
+	dataObj['analysisPeriod'] = osd.ANALYSIS_PERIOD;
+	dataObj['sampleFreq'] = osd.SAMPLE_FREQUENCY;
 	dataObj['battery'] = Math.floor(battery.chargeLevel);
-
+	
 	//return(JSON.stringify(dataObj));
 	return(dataObj);
-    },
-    
+    };
+
     /////////////////////////////////////
     // Accelerometer Sensor Callbacks
     /////////////////////////////////////
-    onAccActivated : function() {
+    osd.onAccActivated = function() {
 	console.log("onAccActivated");
-    },
+    };
 
-    onAccError : function() {
+    osd.onAccError = function() {
 	console.log("onAccError");
-    },
+    };
     
-    onAccData : function() {
-	var dh = FitbitSdDataHandler;
-	//console.log("onAccData() - num. points="+dh.acc.readings.timestamp.length);
-	//console.log("data="+JSON.stringify(dh.acc));
-	var iStart = dh.nSamp*dh.SAMPLE_PERIOD * dh.SAMPLE_FREQUENCY;
+    osd.onAccData = function() {
+	var iStart = osd.nSamp*osd.SAMPLE_PERIOD * osd.SAMPLE_FREQUENCY;
 
-	if (dh.acc.readings.timestamp.length !=
-	    dh.SAMPLE_PERIOD * dh.SAMPLE_FREQUENCY) {
+	if (osd.acc.readings.timestamp.length !=
+	    osd.SAMPLE_PERIOD * osd.SAMPLE_FREQUENCY) {
 	    console.log("onAccData - length wrong???? - expected "+
-		       dh.SAMPLE_PERIOD +" * " + dh.SAMPLE_FREQUENCY);
+		       osd.SAMPLE_PERIOD +" * " + osd.SAMPLE_FREQUENCY);
 	}
-	for (var i=0;i<dh.acc.readings.timestamp.length; i++) {
-	    dh.mSamplesX[iStart+i] = dh.acc.readings.x[i];
-	    dh.mSamplesY[iStart+i] = dh.acc.readings.y[i];
-	    dh.mSamplesZ[iStart+i] = dh.acc.readings.z[i];
+	for (var i=0;i<osd.acc.readings.timestamp.length; i++) {
+	    osd.mSamplesX[iStart+i] = osd.acc.readings.x[i];
+	    osd.mSamplesY[iStart+i] = osd.acc.readings.y[i];
+	    osd.mSamplesZ[iStart+i] = osd.acc.readings.z[i];
 	}
-	dh.nSamp = dh.nSamp + 1;
+	osd.nSamp = osd.nSamp + 1;
 
-	if (dh.nSamp * dh.SAMPLE_PERIOD == dh.ANALYSIS_PERIOD) {
+	// Send data to the phone once we have collected enough.
+	if (osd.nSamp * osd.SAMPLE_PERIOD >= osd.ANALYSIS_PERIOD) {
 	    console.log("onAccData - Sending Data to Phone...");
-	    dh.mComms.sendMessage(dh.getDataJson());
-	    dh.nSamp = 0;
+	    osd.sendMessage(osd.getDataJson());
+	    osd.nSamp = 0;
+	    osd.mSamplesX = [];
+	    osd.mSamplesY = [];
+	    osd.mSamplesZ = [];
+	    osd.mHR = -1;  // so we know it is updating
 	}
-    },
+    };
 
     ////////////////////////////////
     // Heart Rate Sensor Callbacks
     ////////////////////////////////
-    onHrActivated : function() {
+    osd.onHrActivated = function() {
 	console.log("onHrActivated");
     },
 
-    onHrError: function() {
+    osd.onHrError = function() {
 	console.log("onHrError");
     },
 
-    onHrData : function() {
-	//console.log("onHrData() this: "+JSON.stringify(FitbitSdDataHandler));
-	//console.log("onHrData()"+FitbitSdDataHandler.hrm.timestamp+
-	//	    ","+FitbitSdDataHandler.hrm.heartRate);
-	var dh = FitbitSdDataHandler;
-	if (dh.hrm.readings) {
+    osd.onHrData = function() {
+	if (osd.hrm.readings) {
 	    //console.log("HR: "+
-	    //		JSON.stringify(dh.hrm.readings.heartRate));
-	    dh.appdata.hr = dh.hrm.readings.heartRate[0];
+	    //		JSON.stringify(osd.hrm.readings.heartRate[0]));
+	    osd.mHR = osd.hrm.readings.heartRate[0];
 	}
-    },
+    };
+    
+    /////////////////////////
+    // Messaging Callbacks
+    osd.onMsgOpen = function() {
+	console.log("onMsgOpen()");
+    };
 
-};
+    osd.onMsgError = function(err) {
+	console.log("onMsgError: " + err.code + " - " + err.message);
+    };
 
+    osd.onMsgReceive = function(evt) {
+	console.log("onMsgReceive - evt="+JSON.stringify(evt));
+	if (evt['data']=="sendSettings") {
+	    //console.log("sendSettings response");
+	    osd.sendMessage(osd.getSettingsJson());
+	}
+    };
 
-export {FitbitSdDataHandler};
+    osd.sendMessage = function(msgObj) {
+	if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+	    //console.log("sendMessage - sending message: "+JSON.stringify(msgObj));
+	    // Send the data to peer as a message
+	    messaging.peerSocket.send(msgObj);
+	} else {
+	    console.log("sendMessage() - ERROR peerSocket not ready - not sending message");
+	}
+    };
+}
+
+export {initialiseDataHandler};
+
