@@ -1,15 +1,14 @@
 console.log('OpenSeizureDetector.index.js');
 
-// Declare global object to store all the required app variables and functions.
-var osd = {timeStr: '--:--:--', mHR:-1, bat:-1};
 
-import { initialiseDataHandler } from "./FitbitSdDataHandler.js";
-
-
+import { me } from "appbit";
 import document from "document";
 import clock from "clock";
 import { battery } from "power";
+import { initialiseDataHandler } from "./FitbitSdDataHandler.js";
 
+// Declare global object to store all the required app variables and functions.
+var osd = {timeStr: '--:--:--', mHR:-1, bat:-1};
 
 osd['timeText'] = document.getElementById("time-text");
 osd['hrmData'] = document.getElementById("hrm-data");
@@ -26,7 +25,13 @@ osd['refreshData'] = function() {
 }
 
 
+console.log("Application ID: " + me.applicationId);
+console.log("Build ID: " + me.buildId);
+console.log("Timeout Enabled: " + me.appTimeoutEnabled);
+me.appTimeoutEnabled = false;
+console.log("Timeout Enabled: " + me.appTimeoutEnabled);
 console.log("osd="+JSON.stringify(osd));
+
 initialiseDataHandler(osd);
 console.log("osd="+JSON.stringify(osd));
 // Start the data handler that collects accelerometer and HR data.
