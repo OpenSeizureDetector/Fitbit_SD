@@ -31,7 +31,6 @@ initialiseDataHandler(osd);
 console.log("osd="+JSON.stringify(osd));
 // Start the data handler that collects accelerometer and HR data.
 osd.startDataHandler();
-//FitbitSdDataHandler.initialize(appdata);
 
 // Set a timer to update the display every second
 clock.granularity = "seconds";

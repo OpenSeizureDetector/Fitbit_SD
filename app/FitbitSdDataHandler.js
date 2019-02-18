@@ -5,6 +5,7 @@ import { BodyPresenceSensor } from "body-presence";
 import { HeartRateSensor } from "heart-rate";
 import { battery } from "power";
 import * as messaging from "messaging";
+import { memory } from "system";
 
 var initialiseDataHandler = function(osd) {
     console.log("initialiseDataHandler()");
@@ -75,6 +76,8 @@ var initialiseDataHandler = function(osd) {
 	dataObj['analysisPeriod'] = osd.ANALYSIS_PERIOD;
 	dataObj['sampleFreq'] = osd.SAMPLE_FREQUENCY;
 	dataObj['battery'] = Math.floor(battery.chargeLevel);
+	dataObj['memUsed'] = memory.js.used;
+	dataObj['memTotal'] = memory.js.total;
 	
 	//return(JSON.stringify(dataObj));
 	return(dataObj);
@@ -148,9 +151,10 @@ var initialiseDataHandler = function(osd) {
     };
 
     osd.onMsgReceive = function(evt) {
+	console.log("onMsgReceive()");
 	console.log("onMsgReceive - evt="+JSON.stringify(evt));
 	if (evt['data']=="sendSettings") {
-	    //console.log("sendSettings response");
+	    console.log("sendSettings response");
 	    osd.sendMessage(osd.getSettingsJson());
 	}
     };

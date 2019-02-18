@@ -23,7 +23,7 @@ var FitbitCompComms = {
 
     sendMessage : function(msgObj) {
 	if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
-	    console.log("sendMessage - sending message");
+	    console.log("sendMessage - sending message - "+JSON.stringify(msgObj));
 	    // Send the data to peer as a message
 	    messaging.peerSocket.send(msgObj);
 	} else {
@@ -36,9 +36,9 @@ var FitbitCompComms = {
     // ....in the most obscure and difficult to read way that I can imagine!
     onReceiveMessage : function(evt) {
 	console.log("onReceiveMessage - evt="+JSON.stringify(evt));
-	console.log(" - evt.data="+JSON.stringify(evt.data));
+	//console.log(" - evt.data="+JSON.stringify(evt.data));
 	var url = "http://localhost:8080/data";
-	console.log("Received data - sending it to server");
+	//console.log("Received data - sending it to server");
 	// Send the http POST request
 	fetch(url,
 	      {
@@ -50,7 +50,7 @@ var FitbitCompComms = {
 	      })
 	// Then extract the text from the response
 	    .then(response => {
-		console.log("response="+response+", response.status="+response.status);
+		//console.log("response="+response+", response.status="+response.status);
 		return response.text();
 	    })
 	// Then send the response text back to the watch as a message.
