@@ -37,7 +37,7 @@ var FitbitCompComms = {
     onReceiveMessage : function(evt) {
 	console.log("onReceiveMessage - evt="+JSON.stringify(evt));
 	//console.log(" - evt.data="+JSON.stringify(evt.data));
-	var url = "http://localhost:8080/data";
+	var url = "http://127.0.0.1:8080/data";
 	//console.log("Received data - sending it to server");
 	// Send the http POST request
 	fetch(url,
