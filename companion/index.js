@@ -63,6 +63,7 @@ var FitbitCompComms = {
 		console.log("error="+JSON.stringify(error));
 		console.error('Error sending data to server:',
 			      error, JSON.stringify(error));
+		FitbitCompComms.sendMessage("ERROR: OSD Comms");
 	    }
 		  );
 	// Clear as mud, eh!

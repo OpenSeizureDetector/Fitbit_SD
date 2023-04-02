@@ -1,6 +1,6 @@
 {
   "name": "fitbit_sd",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
   "license": "GPL V3",
   "devDependencies": {
@@ -19,7 +19,9 @@
       "access_internet"
     ],
     "buildTargets": [
-      "meson"
+      "meson",
+      "gemini",
+      "mira"
     ],
     "i18n": {},
     "defaultLanguage": "en-US"

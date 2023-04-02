@@ -3,5 +3,7 @@
   <text id="time-text" class="time-text" x="50%" y="90">hh:mm:ss</text>
   <text id="hrm-data" class="sensor-data" x="50%" y="170">{ ... }</text>
   <text id="bat-data" class="sensor-data" x="50%" y="200">{ ... }</text>
+  <text id="osd-status" class="sensor-data" x="50%" y="230">{ ... }</text>
+  <text id="comp-status" class="sensor-data" x="50%" y="260">{ ... }</text>
 
 </svg>
